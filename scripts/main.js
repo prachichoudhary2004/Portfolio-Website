@@ -4,6 +4,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     initializeLoadingScreen();
     initializeNavigation();
+    initializeThemeToggle();
     initializeParticles();
     initializeAnimations();
     initializeCounters();
@@ -119,6 +120,42 @@ function initializeNavigation() {
             }
         });
     });
+}
+
+// Theme Toggle
+function initializeThemeToggle() {
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+    
+    // Check for saved theme preference or default to 'dark'
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    body.setAttribute('data-theme', currentTheme);
+    
+    // Update icon based on current theme
+    updateThemeIcon(currentTheme);
+    
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+    }
+}
+
+function updateThemeIcon(theme) {
+    const themeIcon = document.getElementById('themeIcon');
+    if (themeIcon) {
+        if (theme === 'light') {
+            themeIcon.className = 'fas fa-moon';
+        } else {
+            themeIcon.className = 'fas fa-sun';
+        }
+    }
 }
 
 // Particle Background
@@ -388,12 +425,24 @@ function initializeContactForm() {
         submitBtn.disabled = true;
         
         // Simulate form submission (replace with actual form handling)
-        setTimeout(() => {
-            showNotification('Thank you for your message! I\'ll get back to you soon.', 'success');
-            contactForm.reset();
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }, 2000);
+        // For actual implementation, you would send the data to your backend
+        // or use a service like EmailJS, Formspree, or Netlify Forms
+        const serviceID = 'your_service_id';
+        const templateID = 'your_template_id';
+        const publicKey = 'your_public_key';
+        
+        emailjs.sendForm(serviceID, templateID, this, publicKey)
+            .then(() => {
+                showNotification('Thank you for your message! I\'ll get back to you soon.', 'success');
+                contactForm.reset();
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            })
+            .catch((error) => {
+                showNotification('Error sending email. Please try again.', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
         
         // For actual implementation, you would send the data to your backend
         // or use a service like EmailJS, Formspree, or Netlify Forms
